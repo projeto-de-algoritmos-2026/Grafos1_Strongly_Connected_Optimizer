@@ -1,7 +1,7 @@
 # NomedoProjeto
 
 Número da Lista: 37<br>
-Conteúdo da Disciplina: XXXXXXXXXX<br>
+Conteúdo da Disciplina: Grafos 1<br>
 
 ## Alunos
 |Matrícula | Aluno |
