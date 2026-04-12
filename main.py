@@ -1,5 +1,5 @@
 from node import *
-from dfs import DFS_visit
+from dfs_visit import DFS_visit
 
 def main():
     a1 = Node("A1", 0, 0)
