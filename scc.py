@@ -26,6 +26,38 @@ class Node:
             
 
 
+class DFS_Data:
+    def __init__(self):
+        self.visited = set()
+        self.last = Node("Vazio", 0, 0)
+
+# Devolve um nó em componente source
+def DFS_visit(*g: Node) -> Node:
+    data = DFS_Data()
+    next = 0
+    while(next != -1):
+        _DFS_visit(g[next], data)
+        next = first_unvisited(g, data)
+
+    return data.last
+
+def _DFS_visit(n, data: DFS_Data):
+    data.visited.add(n)
+    for v in n.neighbors:
+        if(v not in data.visited):
+            _DFS_visit(v, data)
+    data.last = n
+    
+        
+
+
+def first_unvisited(g: list[Node], data: DFS_Data) -> int:
+    for i in range(0, len(g)):
+        if(g[i] not in data.visited):
+            return i
+    return -1
+
+
 def main():
     a1 = Node("A1", 0, 0)
     a2 = Node("A2", 0, 0)
@@ -49,6 +81,7 @@ def main():
     c2.connect(c3)
     c3.connect(c1)
 
+    print(DFS_visit(a1,a2,a3,b1,b2,b3,c1,c2,c3).name)
 
 
 
