@@ -26,6 +26,7 @@ class Node:
             
 
 
+# Dados adicionais necessários para DFS visit (hash de nós visitados e o último nó removido do stack)
 class DFS_Data:
     def __init__(self):
         self.visited = set()
@@ -37,10 +38,11 @@ def DFS_visit(*g: Node) -> Node:
     next = 0
     while(next != -1):
         _DFS_visit(g[next], data)
-        next = first_unvisited(g, data)
+        next = _DFS_first_unvisited(g, data)
 
     return data.last
 
+# recursivo
 def _DFS_visit(n, data: DFS_Data):
     data.visited.add(n)
     for v in n.neighbors:
@@ -48,10 +50,8 @@ def _DFS_visit(n, data: DFS_Data):
             _DFS_visit(v, data)
     data.last = n
     
-        
-
-
-def first_unvisited(g: list[Node], data: DFS_Data) -> int:
+# 
+def _DFS_first_unvisited(g: list[Node], data: DFS_Data) -> int:
     for i in range(0, len(g)):
         if(g[i] not in data.visited):
             return i
