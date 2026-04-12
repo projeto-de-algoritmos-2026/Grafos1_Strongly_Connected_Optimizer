@@ -2,15 +2,14 @@ from node import *
 
 
 # Inversão de grafo
-def invert(graph : list[Node]) -> list[Node]:
+def inverted(graph : list[Node]) -> list[Node]:
     g = []
     for n in graph:
         g.append(n.copy_shallow())
     
-    
-    for i in range(len(g)-1, -1, -1):
+    for i in range(len(graph)-1, -1, -1):
         for j in range(len(graph[i].neighbors)-1, -1, -1):
-            ind = Node.find_node(graph[i].neighbors[j], graph)
+            ind = Node.find_node(g, graph[i].neighbors[j])
             g[ind].connect(g[i])
 
     return g        
@@ -19,20 +18,63 @@ def invert(graph : list[Node]) -> list[Node]:
 # Subtração de conjuntos
 def minus(g1: list[Node], g2: list[Node]) -> list[Node]:
     g = []
+
     for n in g1:
+        if(Node.find_node(g2, n) == -1):
+            g.append(n.copy_shallow())
+    
+    for n in g:
+        for neigh in g1[Node.find_node(g1, n)].neighbors:
+            ind = Node.find_node(g, neigh)
+            if(ind != -1):
+                n.connect(g[ind])
+    return g
+
+def dumb_unite(g1: list[Node], g2: list[Node]) -> list[Node]:
+    g = copy_graph(g1)
+
+    g2start = len(g)
+
+    for n in g2:
         g.append(n.copy_shallow())
     
-    for i in range(0, len(g)):
-        for neigh in g1[i].neighbors:
-            if(Node.find_node(neigh, g2) == -1):
-                g[i].connect(neigh)
+    for i in range(0, len(g2)):
+        ind = i + g2start
+        for neigh in g2[i].neighbors:
+            ind2 = Node.find_node(g, neigh)
+            g[ind].connect(g[ind2])
 
-    for node in g:
-        if(Node.find_node(node, g2) != -1):
-            g.remove(node)
+
+    return g
+
+def intersect(g1: list[Node], g2: list[Node]) -> list[Node]:
+    g = []
+
+    for n in g1:
+        if(Node.find_node(g2, n) != -1):
+            g.append(n.copy_shallow())
+
+    for n in g:
+        for neigh in g1[Node.find_node(g1, n)].neighbors:
+            ind = Node.find_node(g, neigh)
+            if(ind != -1):
+                n.connect(g[ind])
     return g
 
 def print_graph(graph: list[Node]) -> None:
     for n in graph:
-        print(f"{n.name}-> ", end="")
+        print(f"{n.name}->", end="")
         n.print_vizinhos()
+
+
+def copy_graph(graph: list[Node]) -> list[Node]:
+    g = []
+    for n in graph:
+        g.append(n.copy_shallow())
+
+    for i in range(0, len(g)):
+        for neigh in graph[i].neighbors:
+            ind = Node.find_node(g, neigh)
+            g[i].connect(g[ind])
+    return g
+
