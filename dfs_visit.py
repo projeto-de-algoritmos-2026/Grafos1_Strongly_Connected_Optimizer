@@ -12,11 +12,12 @@ def DFS_visit(g: list[Node]) -> Node:
     data = _DFS_Data()
     next = 0
     while(next != -1):
-        if(dbg.debug):
+        if(dbg.debug and dbg.rich):
             print(f"DFS_visit({g[next].name})...")
         _DFS_visit(g[next], data)
         next = _DFS_first_unvisited(g, data)
-
+    if(dbg.debug and dbg.rich):
+        print("-=-=-=-=-=-=-")
     return data.last
 
 # recursivo
