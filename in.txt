@@ -1,22 +1,21 @@
 # NÓS
-A1 0 0
-A2 0 0
-A3 0 0
-B1 0 0
-B2 0 0
-B3 0 0
-C1 0 0
-C2 0 0
-C3 0 0
+a 0 0
+b 0 0
+c 0 0
+d 0 0
+e 0 0
+f 0 0
+g 0 0
+h 0 0
 # ARESTAS
-A1 A2
-A2 A3
-A2 B3
-A3 A1
-B1 B2
-B2 B3
-B2 C3
-B3 B1
-C1 C2
-C2 C3
-C3 C1
+a b
+b e
+e b 
+c b
+d b 
+d e
+h f
+f h
+f g
+g d
+d f
