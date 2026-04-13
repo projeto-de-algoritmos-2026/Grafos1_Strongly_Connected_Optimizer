@@ -4,6 +4,7 @@ from dfs_visit import DFS_visit
 from bfs import BFS
 import graph_ops as ops
 import vals as dbg
+import sys
 
 def calcular_distancia(n1, n2):
     return math.sqrt((n1.x - n2.x)**2 + (n1.y - n2.y)**2)
@@ -28,7 +29,7 @@ def carregar_grafo(caminho_arquivo):
 
 def main():
     # Carrega o grafo original
-    grafo_original = carregar_grafo("teste_sugestao.txt")
+    grafo_original = carregar_grafo(sys.argv[1])
     g_trabalho = ops.copy_graph(grafo_original)
     
     # Identifica os SCCs 
