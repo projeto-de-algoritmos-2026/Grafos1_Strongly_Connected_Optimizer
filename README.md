@@ -32,7 +32,7 @@ Exemplo do log detalhado identificando cada um dos SCCs e calculando as distânc
 
 ### 3. Projeto em Funcionamento (Grafo Final)
 O resultado visual com as arestas originais e as sugestões de conexão em vermelho.
-![Projeto Funcionando](./Images/projeto_funcionando.png)
+![Projeto Funcionando](./Images/projeto_funcionando2.png)
 
 ## Instalação 
 Linguagem: Python<br>
