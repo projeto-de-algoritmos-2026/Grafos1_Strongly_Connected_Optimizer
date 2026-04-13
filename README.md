@@ -11,8 +11,7 @@ Conteúdo da Disciplina: Grafos 1<br>
 | 22/1008697  |  Sunamita Vitória Rodrigues dos Santos |
 
 ## Sobre 
-O Strongly Connected Optimizer (SCO) é uma ferramenta desenvolvida para análise e otimização de conectividade em grafos direcionados. O projeto resolve um problema clássico de infraestrutura e logística: como tornar um sistema totalmente acessível com o menor custo de deslocamento possível?
-
+O Strongly Connected Optimizer (SCO) é uma ferramenta desenvolvida para análise e otimização de conectividade em grafos direcionados. O projeto resolve um problema clássico de infraestrutura e logística: como tornar um sistema totalmente acessível com um baixo custo de deslocamento?
 Identificação de SCCs: O programa utiliza uma abordagem baseada em buscas em profundidade (DFS) e largura (BFS) para isolar os Componentes Fortemente Conexos (SCCs) — "ilhas" onde todos os nós alcançam uns aos outros.
 
 Otimização Geométrica: Utilizando as coordenadas cartesianas $(x, y)$ de cada nó, o algoritmo calcula a Distância Euclidiana entre todos os componentes isolados.
