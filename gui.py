@@ -4,10 +4,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import networkx as nx
 import numpy as np
-from node import *
-import graph_ops as ops
 
-# Importa as funções que unificamos na sua main branch
+# Importa as funções que unificamos na main 
 import main as logic 
 
 class RefinedGraphApp:
@@ -138,7 +136,6 @@ class RefinedGraphApp:
                 menor_dist = float('inf')
                 par_escolhido = (None, None)
                 indices = (0, 0)
-                ab_ba = (False, False)
 
                 for i in range(len(sccs_ativos)):
                     for j in range(i + 1, len(sccs_ativos)):
@@ -150,36 +147,22 @@ class RefinedGraphApp:
                                     par_escolhido = (no_a, no_b)
                                     indices = (i, j)
                 
-                # Checa se já existe conexão entre os sccs
-                for n in sccs_ativos[indices[0]]:
-                    for neigh in self.grafo_entrada[Node.find_node(self.grafo_entrada,n)].neighbors:
-                        if(Node.find_node(sccs_ativos[indices[1]],neigh) != -1):
-                            ab_ba = (True, False)
-                            break
-                if(not ab_ba[0]):
-                    for m in sccs_ativos[indices[1]]:
-                        for meigh in self.grafo_entrada[Node.find_node(self.grafo_entrada,m)].neighbors:
-                            if(Node.find_node(sccs_ativos[indices[0]], meigh) != -1):
-                                ab_ba = (False, True)
-                                break
-
                 if par_escolhido[0]:
                     n1, n2 = par_escolhido
                     # Criamos arestas de ida e volta conforme requisito
-                    self.conexoes_sugeridas.append((n1.name, n2.name, menor_dist, ab_ba))
+                    self.conexoes_sugeridas.append((n1.name, n2.name, menor_dist))
                     
                     idx1, idx2 = indices
-                    sccs_ativos[idx1] = ops.dumb_unite(sccs_ativos[idx1], sccs_ativos[idx2])
+                    sccs_ativos[idx1].extend(sccs_ativos[idx2])
                     sccs_ativos.pop(idx2)
 
             if self.conexoes_sugeridas:
                 self.update_log("\n💡 Arestas Sugeridas:")
-                for u, v, d, ab in self.conexoes_sugeridas:
-                    self.update_log(f"🔗 Unir {u} {"" if ab[0] else "<"}-{"" if ab[1] else ">"} {v} (Dist: {d:.2f})")
+                for u, v, d in self.conexoes_sugeridas:
+                    self.update_log(f"🔗 Unir {u} <-> {v} (Dist: {d:.2f})")
             else:
                 self.update_log("\nO grafo já é fortemente conexo!")
 
-            # 3. CHAMA A VISUALIZAÇÃO GRÁFICA
             self.update_log("\n⚙️ Renderizando visualização gráfica...")
             self.desenhar_grafos()
             self.update_log("✅ Concluído!")
@@ -200,7 +183,7 @@ class RefinedGraphApp:
         pos = {}
         for name, node in node_map.items():
             G.add_node(name)
-            pos[name] = (node.x, node.y) # X e Y do in.txt
+            pos[name] = (node.x, node.y) # X e Y do arquivo
         
         # Adiciona arestas originais
         for name, node in node_map.items():
@@ -216,7 +199,7 @@ class RefinedGraphApp:
         edge_width = 1.5
         arrow_size = 15
 
-        # 2. Desenha Subplot 1: Original
+        # Desenha Subplot 1: Original
         self.ax_orig.clear()
         self.ax_orig.set_title("1. Grafo de Entrada (Nós nas Coordenadas XY)", fontname="Segoe UI", fontsize=11, fontweight="bold")
         self.ax_orig.axis('off')
@@ -242,7 +225,7 @@ class RefinedGraphApp:
                                width=edge_width, arrows=True, arrowsize=arrow_size,
                                connectionstyle="arc3,rad=0.1") # Curva leve para arestas duplas
 
-        # 3. Desenha Subplot 2: Final (Original + Sugestões)
+        # Desenha Subplot 2: Final (Original + Sugestões)
         self.ax_final.clear()
         self.ax_final.set_title("2. Resultado Final (Arestas Sugeridas em Vermelho)", fontname="Segoe UI", fontsize=11, fontweight="bold")
         self.ax_final.axis('off')
@@ -251,9 +234,9 @@ class RefinedGraphApp:
         G_final = G_orig.copy()
         
         # Adiciona as sugestões (como DiGraph - Ida e Volta)
-        for u, v, _, ab in self.conexoes_sugeridas:
-            if (not ab[0]): G_final.add_edge(u, v)
-            if (not ab[1]): G_final.add_edge(v, u)
+        for u, v, _ in self.conexoes_sugeridas:
+            G_final.add_edge(u, v)
+            G_final.add_edge(v, u)
 
         # Desenha a base (nós e labels)
         nx.draw_networkx_nodes(G_final, pos, ax=self.ax_final, node_size=node_size, 
@@ -266,12 +249,11 @@ class RefinedGraphApp:
                                connectionstyle="arc3,rad=0.1")
 
 
-        # Arestas sugeridas
         if self.conexoes_sugeridas:
             edges_sug_nx = []
-            for u, v, _, ab in self.conexoes_sugeridas:
-                if(not ab[0]): edges_sug_nx.append((u, v)) # ida
-                if(not ab[1]): edges_sug_nx.append((v, u)) # volta
+            for u, v, _ in self.conexoes_sugeridas:
+                edges_sug_nx.append((u, v))
+                edges_sug_nx.append((v, u)) # ida e volta
 
             nx.draw_networkx_edges(G_final, pos, ax=self.ax_final, edgelist=edges_sug_nx, 
                                    edge_color='#f44336', width=2.0, style='--', arrows=True, arrowsize=15,
