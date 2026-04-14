@@ -48,6 +48,8 @@ Certifique-se de ter o Python instalado. Em seguida, instale as dependências de
 Comando para rodar:
 
 `python gui.py`
+ou
+`python main.py caminho/ao/grafo.txt`
 
 ## Uso 
 
