@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import networkx as nx
 import numpy as np
+from node import *
+import graph_ops as ops
 
 # Importa as funções que unificamos na main 
 import main as logic 
@@ -136,6 +138,7 @@ class RefinedGraphApp:
                 menor_dist = float('inf')
                 par_escolhido = (None, None)
                 indices = (0, 0)
+                ab_ba = (False, False)
 
                 for i in range(len(sccs_ativos)):
                     for j in range(i + 1, len(sccs_ativos)):
@@ -146,20 +149,33 @@ class RefinedGraphApp:
                                     menor_dist = d
                                     par_escolhido = (no_a, no_b)
                                     indices = (i, j)
+                # Checa se já existe conexão entre os sccs
+                for n in sccs_ativos[indices[0]]:
+                    for neigh in self.grafo_entrada[Node.find_node(self.grafo_entrada,n)].neighbors:
+                        if(Node.find_node(sccs_ativos[indices[1]],neigh) != -1):
+                            ab_ba = (True, False)
+                            break
+                if(not ab_ba[0]):
+                    for m in sccs_ativos[indices[1]]:
+                        for meigh in self.grafo_entrada[Node.find_node(self.grafo_entrada,m)].neighbors:
+                            if(Node.find_node(sccs_ativos[indices[0]], meigh) != -1):
+                                ab_ba = (False, True)
+                                break
+
                 
                 if par_escolhido[0]:
                     n1, n2 = par_escolhido
                     # Criamos arestas de ida e volta conforme requisito
-                    self.conexoes_sugeridas.append((n1.name, n2.name, menor_dist))
+                    self.conexoes_sugeridas.append((n1.name, n2.name, menor_dist, ab_ba))
                     
                     idx1, idx2 = indices
-                    sccs_ativos[idx1].extend(sccs_ativos[idx2])
+                    sccs_ativos[idx1] = ops.dumb_unite(sccs_ativos[idx1], sccs_ativos[idx2])
                     sccs_ativos.pop(idx2)
 
             if self.conexoes_sugeridas:
                 self.update_log("\n💡 Arestas Sugeridas:")
-                for u, v, d in self.conexoes_sugeridas:
-                    self.update_log(f"🔗 Unir {u} <-> {v} (Dist: {d:.2f})")
+                for u, v, d, ab in self.conexoes_sugeridas:
+                    self.update_log(f"🔗 Unir {u} {"" if ab[0] else "<"}-{"" if ab[1] else ">"} {v} (Dist: {d:.2f})")
             else:
                 self.update_log("\nO grafo já é fortemente conexo!")
 
@@ -234,9 +250,9 @@ class RefinedGraphApp:
         G_final = G_orig.copy()
         
         # Adiciona as sugestões (como DiGraph - Ida e Volta)
-        for u, v, _ in self.conexoes_sugeridas:
-            G_final.add_edge(u, v)
-            G_final.add_edge(v, u)
+        for u, v, _, ab in self.conexoes_sugeridas:
+            if (not ab[0]): G_final.add_edge(u, v)
+            if (not ab[1]): G_final.add_edge(v, u)
 
         # Desenha a base (nós e labels)
         nx.draw_networkx_nodes(G_final, pos, ax=self.ax_final, node_size=node_size, 
@@ -251,9 +267,9 @@ class RefinedGraphApp:
 
         if self.conexoes_sugeridas:
             edges_sug_nx = []
-            for u, v, _ in self.conexoes_sugeridas:
-                edges_sug_nx.append((u, v))
-                edges_sug_nx.append((v, u)) # ida e volta
+            for u, v, _, ab in self.conexoes_sugeridas:
+                if(not ab[0]): edges_sug_nx.append((u, v)) # ida
+                if(not ab[1]): edges_sug_nx.append((v, u)) # volta
 
             nx.draw_networkx_edges(G_final, pos, ax=self.ax_final, edgelist=edges_sug_nx, 
                                    edge_color='#f44336', width=2.0, style='--', arrows=True, arrowsize=15,
